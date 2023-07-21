@@ -1,6 +1,6 @@
 # Pong with DQN AI
 
-Welcome to Pong with DQN AI! This project combines the classic game Pong with the power of Deep Q-Networks (DQN) to create an exciting and challenging gaming experience. The game allows two human players to play against each other or test their skills against an intelligent AI opponent trained using Reinforcement Learning techniques.
+Welcome to Pong with DQN AI! This project combines the classic game Pong (with Pygame from scratch) with the power of Deep Q-Networks (DQN) to create an exciting and challenging gaming experience. The game allows two human players to play against each other or test their skills against an intelligent AI opponent trained using Reinforcement Learning techniques.
 
 ## Table of Contents
 
