@@ -9,7 +9,6 @@ from paddle import Paddle
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
-
 def main():
     width = 700
     height = 500
@@ -22,6 +21,7 @@ def main():
 
     clock = pygame.time.Clock()
 
+    # Create paddles and ball objects
     paddle_a = Paddle(WHITE, 10, 100)
     paddle_a.rect.x = 20
     paddle_a.rect.y = 200
@@ -34,8 +34,8 @@ def main():
     ball.rect.x = 345
     ball.rect.y = 195
 
+    # Group all sprites to manage them easily
     all_sprites_list = pygame.sprite.Group()
-
     all_sprites_list.add(paddle_a)
     all_sprites_list.add(paddle_b)
     all_sprites_list.add(ball)
@@ -46,6 +46,7 @@ def main():
     state_size = 5
     action_size = 3
 
+    # Create agents for both paddles
     agent_a = Agent(state_size, action_size)
     agent_b = Agent(state_size, action_size)
 
@@ -58,6 +59,7 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
+        # Catch the states and let the agents decide the action
         state_a = np.array([ball.rect.x, ball.rect.y, paddle_a.rect.y, ball.velocity[0], ball.velocity[1]])
         state_b = np.array([ball.rect.x, ball.rect.y, paddle_b.rect.y, ball.velocity[0], ball.velocity[1]])
 
@@ -77,14 +79,15 @@ def main():
         reward_a = 0
         reward_b = 0
 
+        # Handle scoring and ball collisions with walls and paddles
         if ball.rect.x >= 690:
             score_a += 1
             reward_b = -10
             ball.reset()
         if ball.rect.x <= 0:
             score_b += 1
-            ball.reset()
             reward_a = -10
+            ball.reset()
         if ball.rect.y > 490:
             ball.velocity[1] = -ball.velocity[1]
         if ball.rect.y < 0:
@@ -100,6 +103,7 @@ def main():
                 ball.rect.x -= 10
                 reward_b = 10
 
+        # Metric to measure the improvement (or decrease) in performance
         if -10 == reward_b or reward_b == 10:
             g_score = 0.05 * reward_b + g_score * 0.95
 
@@ -108,14 +112,15 @@ def main():
         next_state_a = np.array([ball.rect.x, ball.rect.y, paddle_a.rect.y, ball.velocity[0], ball.velocity[1]])
         next_state_b = np.array([ball.rect.x, ball.rect.y, paddle_b.rect.y, ball.velocity[0], ball.velocity[1]])
 
-        # Almacenar la experiencia en los agentes para el aprendizaje posterior
+        # Capture the experiences of the agents for later learning
         agent_a.capture_sample((state_a, action_a, reward_a, next_state_a))
         agent_b.capture_sample((state_b, action_b, reward_b, next_state_b))
 
-        # Proceso de entrenamiento de los agentes
+        # Process the training of the agents
         agent_a.process()
         agent_b.process()
 
+        # Display the game every 100 frames
         if frame_counter % 100 == 0:
             window.fill(BLACK)
 
@@ -136,10 +141,12 @@ def main():
 
             print(frame_counter)
 
+        # Store game history for plotting
         if frame_counter % 200 == 0:
             history.append((frame_counter, g_score))
         frame_counter = frame_counter + 1
 
+    # Plot the game score history
     x_val = [x[0] for x in history]
     y_val = [x[1] for x in history]
 
@@ -148,6 +155,7 @@ def main():
     plt.ylabel("Score")
     plt.show()
 
+    # Save Agent B's trained model
     agent_b.save_model("AgenteB")
 
     pygame.quit()
